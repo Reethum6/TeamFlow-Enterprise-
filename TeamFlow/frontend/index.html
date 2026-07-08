@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamFlow Enterprise | Devops Management Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M30,50 C15,10 5,50 25,50 C45,50 55,90 70,50 C85,10 95,50 75,50 C60,50 50,20 30,50 Z%22 fill=%22none%22 stroke=%22%2338bdf8%22 stroke-width=%228%22/></svg>">
+
+    <style>
+        :root {
+            --bg-matrix: #03050d;
+            --bg-surface: rgba(10, 16, 36, 0.45);
+            --bg-card: rgba(20, 28, 58, 0.3);
+            --border-glow: rgba(56, 189, 248, 0.08);
+            --border-active: rgba(56, 189, 248, 0.35);
+            --text-neon: #f8fafc;
+            --text-muted: #475569;
+            --text-cyber: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --card-radius: 14px;
+            --text-scale: 100%;
+        }
+
+        body.high-contrast {
+            --bg-matrix: #000000;
+            --bg-surface: #111111;
+            --bg-card: #222222;
+            --border-glow: #ffffff;
+            --border-active: #00ff00;
+            --text-neon: #ffffff;
+            --text-muted: #ffff00;
+            --text-cyber: #ffffff;
+            --primary: #00ffff;
+        }
+        body.large-text { --text-scale: 120%; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-matrix);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.09) 0%, transparent 55%),
+                linear-gradient(rgba(255, 255, 255, 0.004) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.004) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+            color: var(--text-neon);
+            margin: 0;
+            padding: 24px;
+            font-size: calc(15px * (var(--text-scale) / 100));
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+            animation: meshFlow 25s ease infinite alternate;
+        }
+
+        @keyframes meshFlow {
+            0% { background-position: 0% 0%, 0% 0%, 0 0, 0 0; }
+            100% { background-position: 10% 15%, -10% -15%, 0 0, 0 0; }
+        }
+
+        .matrix-container { max-width: 1750px; margin: 0 auto; animation: workspaceEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .hidden { display: none !important; }
+
+        @keyframes workspaceEntrance {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #auth-gateway {
+            max-width: 420px;
+            margin: 120px auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 36px;
+            border-radius: var(--card-radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.03);
+            text-align: center;
+        }
+
+        #auth-gateway h2 {
+            margin: 0 0 28px 0;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, var(--primary), #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 18px 28px;
+            border-radius: var(--card-radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .brand { 
+            display: flex;
+            align-items: center;
+            font-size: 22px; 
+            font-weight: 800; 
+            letter-spacing: -0.04em; 
+            gap: 10px;
+        }
+        .brand span { color: var(--primary); text-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        .logo-loop path { filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5)); }
+
+        .user-meta { display: flex; align-items: center; gap: 16px; }
+
+        .role-pill {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary);
+            background: rgba(56, 189, 248, 0.05);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .analytics-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 22px;
+            border-radius: var(--card-radius);
+            margin-bottom: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .analytics-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .analytics-title svg { width: 16px; height: 16px; fill: var(--primary); }
+        .analytics-metrics { font-size: 15px; color: var(--text-cyber); }
+        .analytics-metrics strong { color: var(--primary); font-size: 19px; font-weight: 800; }
+
+        .progress-track {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        
+        .tab-btn {
+            background: transparent;
+            color: #64748b;
+            border: 1px solid transparent;
+            padding: 11px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover { color: var(--text-neon); background: rgba(255,255,255,0.02); }
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.05);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 🎛️ Corrected Multi-Column Grid Space Properties */
+        .workspace-grid { 
+            display: grid; 
+            grid-template-columns: 320px 1fr; 
+            gap: 24px; 
+            align-items: start;
+            transition: grid-template-columns 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .workspace-grid.expanded { grid-template-columns: 0px 1fr; }
+
+        /* 🌀 Sidebar Slide Properties */
+        .sidebar-forms { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+            width: 320px;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sidebar-forms.collapsed {
+            transform: translateX(-350px);
+            opacity: 0;
+            width: 0px;
+            pointer-events: none;
+        }
+
+        .form-card {
+            background: var(--bg-surface);
+            padding: 22px;
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .form-card h3 { margin: 0 0 18px 0; font-size: 14px; font-weight: 700; color: var(--text-neon); text-transform: uppercase; letter-spacing: 0.01em; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px; }
+
+        .form-input {
+            width: 100%;
+            padding: 11px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-glow);
+            color: var(--text-neon);
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(56, 189, 248, 0.12); }
+        textarea.form-input { resize: none; height: 75px; }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), #0284c7);
+            color: #060814;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .btn-action:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(56, 189, 248, 0.3); }
+
+        .board-canvas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        
+        .board-lane {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--card-radius);
+            padding: 16px;
+            min-height: 700px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .lane-header {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lane-badge { background: rgba(255,255,255,0.03); padding: 2px 8px; border-radius: 12px; font-size: 10px; color: var(--text-neon); font-family: var(--font-mono); }
+
+        .empty-state-placeholder {
+            border: 1px dashed rgba(56, 189, 248, 0.15);
+            background: rgba(56, 189, 248, 0.01);
+            border-radius: 8px;
+            padding: 28px 14px;
+            text-align: center;
+            color: #475569;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .task-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.4s;
+        }
+        .task-node:hover {
+            border-color: var(--border-active);
+            box-shadow: 0 12px 28px rgba(56, 189, 248, 0.12), 0 4px 10px rgba(0,0,0,0.15);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .node-title { margin: 0 0 4px 0; font-size: 14.5px; font-weight: 700; color: var(--text-neon); }
+        .node-id { font-size: 10px; font-family: var(--font-mono); color: #475569; }
+        .node-desc { font-size: 12.5px; color: var(--text-cyber); margin: 12px 0; line-height: 1.45; }
+
+        .node-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #64748b;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            padding-top: 11px;
+            margin-top: 12px;
+        }
+
+        .verdict-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-glow);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        .verdict-approved { color: var(--success); font-weight: 600; }
+        .verdict-rejected { color: var(--warning); font-weight: 600; }
+
+        .comment-area { margin-top: 14px; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); }
+        .comment-list { max-height: 95px; overflow-y: auto; margin-bottom: 8px; }
+        .comment-item { font-size: 11px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-family: var(--font-mono); }
+        .comment-author { color: #60a5fa; font-weight: 600; }
+        .comment-form { display: flex; gap: 5px; }
+        .comment-box-input { flex-grow: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: #fff; border-radius: 4px; font-size: 11px; padding: 6px; }
+        .comment-box-btn { background: var(--primary); border: none; color: #060814; font-size: 11px; font-weight: 700; padding: 0 10px; border-radius: 4px; cursor: pointer; }
+
+        .feed-box { max-height: 145px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px; color: rgba(56, 189, 248, 0.65); background: rgba(0,0,0,0.35); padding: 12px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.08); }
+        .feed-line { margin-bottom: 5px; }
+
+        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast-notification {
+            background: rgba(10, 15, 30, 0.95);
+            border-left: 4px solid var(--primary);
+            border-top: 1px solid var(--border-glow);
+            border-right: 1px solid var(--border-glow);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            color: var(--text-neon);
+            font-size: 13px;
+            min-width: 290px;
+            backdrop-filter: blur(12px);
+            animation: toastSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes toastSlide { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .accessibility-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 10px;
+            border-radius: var(--card-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            display: flex;
+            gap: 8px;
+            z-index: 9999;
+            backdrop-filter: blur(12px);
+        }
+        .access-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-glow);
+            color: var(--text-neon);
+            padding: 5px 11px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .access-btn:hover { background: rgba(56, 189, 248, 0.08); }
+
+        .rca-wrapper { background: rgba(239, 64, 64, 0.01); border: 1px solid rgba(239, 64, 64, 0.18); padding: 20px; border-radius: var(--card-radius); margin-bottom: 14px; }
+        .rca-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .rca-timeline { background: rgba(0,0,0,0.3); padding: 11px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px; color: #fca5a5; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="accessibility-widget">
+        <button class="access-btn" onclick="toggleContrast()">Contrast Mode</button>
+        <button class="access-btn" onclick="toggleTextSize()">Text Scaling</button>
+    </div>
+
+    <div class="matrix-container">
+        <div id="auth-gateway">
+            <h2>TEAMFLOW Enterprise</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Network Username</label>
+                    <input type="text" id="login-username" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Access Credentials</label>
+                    <input type="password" id="login-password" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">System Role</label>
+                    <select id="login-role" class="form-input">
+                        <option value="Developer">Developer Profile</option>
+                        <option value="Manager">Manager Profile</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action" style="margin-bottom:8px;">Authenticate Session</button>
+                <button type="button" class="btn-action" style="background:transparent; color:var(--text-cyber); border:1px solid var(--border-glow);" onclick="handleRegistration()">Register Profile</button>
+            </form>
+        </div>
+
+        <div id="workspace-shell" class="hidden">
+            <div class="app-header">
+                <div class="brand">
+                    <svg class="logo-loop" viewBox="0 0 100 50" style="width: 36px; height: 20px;">
+                        <defs>
+                            <linearGradient id="logo-neon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8" />
+                                <stop offset="100%" stop-color="#a855f7" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M30,25 C15,5 5,25 25,25 C45,25 55,45 70,25 C85,5 95,25 75,25 C60,25 50,10 30,25 Z" fill="none" stroke="url(#logo-neon-grad)" stroke-width="8" stroke-linecap="round" opacity="0.3" />
+                        <path d="M25,25 C45,25 55,45 70,25" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" />
+                    </svg>
+                    TEAMFLOW <span>Enterprise</span>
+                </div>
+                <div class="user-meta">
+                    <span id="user-badge" style="font-weight:600;"></span>
+                    <button class="btn-action" style="background:var(--danger); color:#fff; padding:6px 14px; width:auto;" onclick="logOut()">Logout</button>
+                </div>
+            </div>
+
+            <div class="analytics-panel">
+                <div class="analytics-title">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                    Performance Output Track
+                </div>
+                <div class="analytics-metrics" id="metrics-text">Gathering database data...</div>
+                <div class="progress-track">
+                    <div id="progress-bar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" id="tab-kanban" onclick="switchTab('kanban')">Kanban Workspace</button>
+                <button class="tab-btn" id="tab-rca" onclick="switchTab('rca')">RCA Investigation Registry</button>
+            </div>
+
+            <button class="btn-action" style="width: auto; margin-bottom: 16px; padding: 8px 16px; font-size: 11px;" onclick="toggleSidebar()">
+                ↔️ Toggle Sidebar Control Panel
+            </button>
+
+            <div id="view-kanban" class="tab-view workspace-grid">
+                <div class="sidebar-forms">
+                    <div class="form-card">
+                        <h3>Deploy Operational Task</h3>
+                        <form id="task-form">
+                            <div class="form-group">
+                                <label class="form-label">Task Title</label>
+                                <input type="text" id="task-title" class="form-input" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Operational Description</label>
+                                <textarea id="task-desc" class="form-input"></textarea>
+                            </div>
+                            <button type="submit" class="btn-action">Deploy Node</button>
+                        </form>
+                    </div>
+
+                    <div id="form-section-review" class="form-card" style="display:none;">
+                        <h3 style="color:var(--warning)">Quality Gate Evaluation</h3>
+                        <form id="review-form">
+                            <div class="form-group">
+                                <label class="form-label">Target Node ID Reference</label>
+                                <input type="text" id="review-task-id" class="form-input" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gate Verdict</label>
+                                <select id="review-status" class="form-input">
+                                    <option value="Approved">Approve & Complete</option>
+                                    <option value="Rejected">Reject back to In-Progress</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Audit Review Comments</label>
+                                <input type="text" id="review-comments" class="form-input" required autocomplete="off">
+                            </div>
+                            <button type="submit" class="btn-action" style="background:var(--warning); color:#000;">Commit Decision</button>
+                        </form>
+                    </div>
+
+                    <div class="form-card">
+                        <h3>System Telemetry Logs</h3>
+                        <div id="logs-container" class="feed-box"></div>
+                    </div>
+                </div>
+
+                <div class="board-canvas">
+                    <div class="board-lane">
+                        <div class="lane-header">BACKLOG <span class="lane-badge" id="count-Todo">0</span></div>
+                        <div id="slot-Todo"></div>
+                    </div>
+                    <div class="board-lane">
+                        <div class="lane-header">IN PROGRESS <span class="lane-badge" id="count-InProgress">0</span></div>
+                        <div id="slot-InProgress"></div>
+                    </div>
+                    <div class="board-lane">
+                        <div class="lane-header">UNDER REVIEW <span class="lane-badge" id="count-Review">0</span></div>
+                        <div id="slot-Review"></div>
+                    </div>
+                    <div class="board-lane">
+                        <div class="lane-header">DONE <span class="lane-badge" id="count-Done">0</span></div>
+                        <div id="slot-Done"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-rca" class="tab-view hidden" style="background:var(--bg-surface); padding:24px; border-radius:var(--card-radius); border:1px solid var(--border-color);">
+                <h3 style="margin-top:0; font-size:18px;">RCA Investigation Center</h3>
+                <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Automated compliance audits recorded upon Quality Gate task rejection.</p>
+                <div id="rca-list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleContrast() { document.body.classList.toggle('high-contrast'); }
+        function toggleTextSize() { document.body.classList.toggle('large-text'); }
+    </script>
+    <script src="app.js?v=premium_vfinal_fixed"></script>
+</body>
+</html>
